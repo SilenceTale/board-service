@@ -2,6 +2,7 @@ package org.advisor.board.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.advisor.board.validators.BoardValidator;
 import org.advisor.global.exceptions.BadRequestException;
 import org.advisor.global.libs.Utils;
 import org.advisor.global.rests.JSONData;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final Utils utils;
+    private final BoardValidator boardValidator;
 
     /**
      * 게시판 설정 한 개 조회
@@ -37,9 +39,13 @@ public class BoardController {
         String mode = form.getMode();
         mode = StringUtils.hasText(mode) ? mode : "write";
         commonProcess(form.getBid(), mode); // 공통처리
+
+        boardValidator.validate(form, errors);
+
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
+
 
 
         return null;
@@ -53,6 +59,7 @@ public class BoardController {
      */
     @GetMapping("/view/{seq}")
     public JSONData view(@PathVariable("seq") Long seq) {
+        commonProcess(seq, "view");
 
         return null;
     }
@@ -65,6 +72,7 @@ public class BoardController {
      */
     @GetMapping("/list/{bid}")
     public JSONData list(@PathVariable("bid") String bid) {
+        commonProcess(bid, "list");
 
         return null;
     }
@@ -77,6 +85,7 @@ public class BoardController {
      */
     @DeleteMapping("/{seq}")
     public JSONData delete(@PathVariable("seq") Long seq) {
+        commonProcess(seq, "delete");
 
         return null;
     }
