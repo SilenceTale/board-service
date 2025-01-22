@@ -2,6 +2,7 @@ package org.advisor.board.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.advisor.board.validators.CommentValidator;
 import org.advisor.global.exceptions.BadRequestException;
 import org.advisor.global.libs.Utils;
 import org.advisor.global.rests.JSONData;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     private final Utils utils;
+    private final CommentValidator commentValidator;
 
     /**
      * 댓글 작성, 수정
@@ -22,6 +24,8 @@ public class CommentController {
      */
     @PostMapping("/save")
     public JSONData save(@RequestBody @Valid RequestComment form, Errors errors) {
+
+        commentValidator.validate(form, errors);
 
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
